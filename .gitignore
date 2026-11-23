@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.firebase/
+*.log
+
+.firebase-token
+login_url.txt
+login_code.txt

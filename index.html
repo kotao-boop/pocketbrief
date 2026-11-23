@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PocketBrief — Hybrid AI Reading Digest</title>
+    <meta
+      name="description"
+      content="Paste any text or photo. Short pieces are briefed on-device with Gemini Nano; long documents go to cloud Gemini for a deep brief. Powered by Firebase AI Logic hybrid inference."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='42' fill='%23ffb340'/%3E%3Cpath d='M50 8a42 42 0 0 1 0 84z' fill='%234f8cff'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">◐</span>
+        <div>
+          <h1>PocketBrief</h1>
+          <p class="tagline">Hybrid AI reading digest — on-device first, cloud when it counts.</p>
+        </div>
+      </div>
+      <div id="deviceStatus" class="device-status" title="On-device model status">
+        <span class="dot dot-unknown"></span><span id="deviceStatusText">Checking on-device model…</span>
+      </div>
+    </header>
+
+    <div id="setupBanner" class="banner" hidden>
+      <strong>Setup needed:</strong> this deployment has no Firebase project configured yet.
+      Add your <code>firebaseConfig</code> in <code>src/config.js</code> (Firebase console → AI Logic →
+      Get started → Gemini Developer API) to enable live AI. The full UI is shown below.
+    </div>
+
+    <main class="layout">
+      <section class="panel input-panel">
+        <div class="tabs" role="tablist">
+          <button id="tabText" class="tab active" role="tab">Text</button>
+          <button id="tabImage" class="tab" role="tab">Photo</button>
+        </div>
+
+        <div id="paneText">
+          <textarea
+            id="inputText"
+            rows="12"
+            placeholder="Paste an article, meeting notes, an email thread, a contract…"
+          ></textarea>
+          <div class="row between">
+            <span id="charCount" class="muted">0 characters</span>
+            <button id="sampleBtn" class="ghost">Try a sample</button>
+          </div>
+        </div>
+
+        <div id="paneImage" hidden>
+          <label class="dropzone" for="inputImage">
+            <input id="inputImage" type="file" accept="image/jpeg,image/png" hidden />
+            <span id="dropLabel">Drop a JPEG/PNG photo of a document, whiteboard or slide — or click to choose.</span>
+            <img id="imagePreview" alt="" hidden />
+          </label>
+        </div>
+
+        <div class="row">
+          <label class="route-label" for="routeSelect">Routing</label>
+          <select id="routeSelect">
+            <option value="auto" selected>Auto (hybrid)</option>
+            <option value="device">On-device preferred</option>
+            <option value="cloud">Cloud deep brief</option>
+          </select>
+          <span id="routeHint" class="muted"></span>
+        </div>
+
+        <button id="briefBtn" class="primary">Brief it</button>
+        <div id="progress" class="progress" hidden>
+          <div id="progressBar" class="progress-bar"></div>
+          <span id="progressText" class="muted"></span>
+        </div>
+        <p id="errorBox" class="error" hidden></p>
+      </section>
+
+      <section class="panel output-panel">
+        <div id="emptyState" class="empty">
+          <h2>Wall of text in. Clean brief out.</h2>
+          <p>
+            Short pieces are summarized <strong>on your device</strong> by Gemini Nano — private,
+            offline-capable, and free. Long documents are handed to <strong>cloud Gemini</strong>
+            for a deep brief with key points, action items and a glossary. One SDK —
+            Firebase AI Logic — routes between them.
+          </p>
+        </div>
+        <article id="resultCard" hidden>
+          <div class="row between">
+            <span id="routeBadge" class="badge"></span>
+            <span id="latency" class="muted"></span>
+          </div>
+          <h2 id="resultTitle"></h2>
+          <p id="resultSummary"></p>
+          <ul id="resultBullets"></ul>
+          <div id="deepSections" hidden>
+            <h3>Key points</h3>
+            <ul id="resultKeyPoints"></ul>
+            <div id="actionWrap" hidden>
+              <h3>Action items</h3>
+              <ul id="resultActions"></ul>
+            </div>
+            <div id="glossaryWrap" hidden>
+              <h3>Glossary</h3>
+              <dl id="resultGlossary"></dl>
+            </div>
+          </div>
+          <div id="extractedWrap" hidden>
+            <h3>Text found in the photo</h3>
+            <pre id="resultExtracted"></pre>
+          </div>
+          <div id="resultTags" class="tags"></div>
+        </article>
+
+        <div id="historyWrap" hidden>
+          <h3 class="history-title">Your recent briefs</h3>
+          <ul id="historyList" class="history"></ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer muted">
+      Built with Firebase AI Logic hybrid inference (Gemini Nano on-device · Gemini in the cloud),
+      Firestore, Remote Config and App Check. Your short texts never have to leave this device.
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
